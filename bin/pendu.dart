@@ -1,6 +1,6 @@
 // Jeu du pendu
 import 'dart:io';
-import 'package:pendu/pendu.dart';
+import 'package:pendu/hangman.dart';
 import 'package:pendu/dictionary.dart';
 import 'package:pendu/console_colors.dart';
 
@@ -27,12 +27,12 @@ void checkWin(String wordSecret, Set<String> foundLetters, int wrongGuesses) {
   if (foundLetters.length == wordSecret.runes.toSet().length) {
     PrintHangman.drawLevel(wrongGuesses, 'green');
     print(
-        "Gagné ! Vous avez trouvé le mot : ${ConsoleColors.green} ${wordSecret.toUpperCase()} ${ConsoleColors.reset}");
+        "${ConsoleColors.yellow}Gagné ! Vous avez trouvé le mot : ${ConsoleColors.green} ${wordSecret.toUpperCase()} ${ConsoleColors.reset}");
   } else {
     clearScreen();
     PrintHangman.drawLevel(wrongGuesses, 'red');
     print(
-        "Perdu ! Le mot était : ${ConsoleColors.red} ${wordSecret.toUpperCase()} ${ConsoleColors.reset}");
+        "${ConsoleColors.yellow}Perdu ! Le mot était : ${ConsoleColors.red} ${wordSecret.toUpperCase()} ${ConsoleColors.reset}");
   }
 }
 
@@ -55,7 +55,7 @@ void playGame(Dictionary dict) {
 
   do {
     printGuess(wordSecret, foundLetters, wrongGuesses);
-    print('Entrez une lettre : ');
+    print('${ConsoleColors.yellow}Entrez une lettre : ${ConsoleColors.reset}');
     String letter = (stdin.readLineSync()?.toUpperCase() ?? '');
     if (letter.isNotEmpty && !wordSecret.contains(letter)) {
       wrongGuesses++;
@@ -70,7 +70,7 @@ void playGame(Dictionary dict) {
       foundLetters.length < wordSecret.runes.toSet().length);
 
   checkWin(wordSecret, foundLetters, wrongGuesses);
-  print("Appuyez sur une touche pour continuer...");
+  print("${ConsoleColors.yellow}Appuyez sur une touche pour continuer...${ConsoleColors.reset}");
   stdin.readLineSync();
 }
 
@@ -78,7 +78,7 @@ void manageDictionary(Dictionary dict) {
   bool manageDict = true;
   while (manageDict) {
     print('''
-${ConsoleColors.magenta}Gestion du dictionnaire:
+${ConsoleColors.magenta}Gestion du dictionnaire :
 ${ConsoleColors.green}1. Ajouter
 ${ConsoleColors.cyan}2. Modifier
 ${ConsoleColors.yellow}3. Enlever
@@ -143,8 +143,8 @@ void main() async {
         if (dict.words.isNotEmpty) {
           playGame(dict);
         } else {
-          print('Le dictionnaire est vide.');
-          print("Appuyez sur une touche pour continuer...");
+          print('${ConsoleColors.yellow}Le dictionnaire est vide.');
+          print("Appuyez sur une touche pour continuer...${ConsoleColors.reset}");
           stdin.readLineSync();
         }
         break;
@@ -152,9 +152,13 @@ void main() async {
         manageDictionary(dict);
         break;
       case '3':
-        runApp = false;
-        clearScreen();
-        print('${ConsoleColors.cyan}Au revoir !${ConsoleColors.reset}');
+        print('${ConsoleColors.yellow}Êtes-vous sûr de vouloir quitter ? (o/n)${ConsoleColors.reset}');
+        String confirm = stdin.readLineSync()?.toLowerCase() ?? '';
+        if (confirm == 'o') {
+          runApp = false;
+          clearScreen();
+          print('${ConsoleColors.cyan}Au revoir !${ConsoleColors.reset}');
+        }
         break;
       default:
         break;

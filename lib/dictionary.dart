@@ -3,7 +3,6 @@ import 'dart:math';
 import 'dart:io';
 import 'package:pendu/console_colors.dart';
 
-
 class Dictionary {
   List<String> words = [];
   final String filePath = 'dict.json';
@@ -41,9 +40,9 @@ class Dictionary {
   }
 
   bool modifyWord(String oldWord, String newWord) {
-    int index = words.indexOf(oldWord.toUpperCase());
+    int index = words.indexOf(oldWord);
     if (index != -1) {
-      words[index] = newWord.toUpperCase();
+      words[index] = newWord;
       _saveWords();
       return true;
     }
@@ -52,10 +51,10 @@ class Dictionary {
 
   void listWords() {
     if (words.isEmpty) {
-      print('Le dictionnaire est vide.');
+      print('${ConsoleColors.yellow}Le dictionnaire est vide.${ConsoleColors.reset}');
     } else {
       print(
-          '${ConsoleColors.blue}Mots dans le dictionnaire:${ConsoleColors.reset}');
+          '${ConsoleColors.blue}Mots dans le dictionnaire :${ConsoleColors.reset}');
       for (String word in words) {
         print(word);
       }
