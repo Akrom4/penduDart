@@ -1,10 +1,12 @@
 // Jeu du pendu
 import 'dart:io';
 import 'package:pendu/pendu.dart';
+import 'package:pendu/dictionary.dart';
+import 'package:pendu/console_colors.dart';
 
 void printGuess(String wordSecret, Set<String> foundLetters, int wrongGuesses) {
   clearScreen();
-  HangmanDraw.drawLevel(wrongGuesses, 'red');
+  PrintHangman.drawLevel(wrongGuesses, 'red');
 
   for (int i = 0; i < wordSecret.length; i++) {
     if (foundLetters.contains(wordSecret[i])) {
@@ -23,26 +25,33 @@ void clearScreen() {
 void checkWin(String wordSecret, Set<String> foundLetters, int wrongGuesses) {
   clearScreen();
   if (foundLetters.length == wordSecret.runes.toSet().length) {
-    HangmanDraw.drawLevel(wrongGuesses, 'green');
+    PrintHangman.drawLevel(wrongGuesses, 'green');
     print(
         "Gagné ! Vous avez trouvé le mot : ${ConsoleColors.green} ${wordSecret.toUpperCase()} ${ConsoleColors.reset}");
-  }
-  else {
+  } else {
     clearScreen();
-    HangmanDraw.drawLevel(wrongGuesses, 'red');
+    PrintHangman.drawLevel(wrongGuesses, 'red');
     print(
         "Perdu ! Le mot était : ${ConsoleColors.red} ${wordSecret.toUpperCase()} ${ConsoleColors.reset}");
   }
 }
 
-void main() {
-  String wordSecret = 'AZERTY';
+void printMainmenu() {
+  clearScreen();
+  print('''
+${ConsoleColors.magenta} * * * * Jeu du pendu * * * * ${ConsoleColors.reset}
+${ConsoleColors.green}1. Jouer${ConsoleColors.reset}
+${ConsoleColors.blue}2. Dictionnaire${ConsoleColors.reset}
+${ConsoleColors.red}3. Quitter${ConsoleColors.reset}
+${ConsoleColors.yellow}Choisissez une option :${ConsoleColors.reset}
+ ''');
+}
+
+void playGame(Dictionary dict) {
+  String wordSecret = dict.getRandomWord();
   Set<String> foundLetters = <String>{};
   int wrongGuesses = 0;
-  const int maxWrongGuesses = 6;
-
-  clearScreen();
-  print(' * * * * Jeu du pendu * * * * ');
+  const int maxWrongGuesses = 7;
 
   do {
     printGuess(wordSecret, foundLetters, wrongGuesses);
@@ -52,8 +61,8 @@ void main() {
       wrongGuesses++;
     } else {
       for (int i = 0; i < wordSecret.length; i++) {
-        if (wordSecret[i] == letter[0]) {
-          foundLetters.add(letter[0]);
+        if (wordSecret[i] == letter) {
+          foundLetters.add(letter);
         }
       }
     }
@@ -61,4 +70,94 @@ void main() {
       foundLetters.length < wordSecret.runes.toSet().length);
 
   checkWin(wordSecret, foundLetters, wrongGuesses);
+  print("Appuyez sur une touche pour continuer...");
+  stdin.readLineSync();
+}
+
+void manageDictionary(Dictionary dict) {
+  bool manageDict = true;
+  while (manageDict) {
+    print('''
+${ConsoleColors.magenta}Gestion du dictionnaire:
+${ConsoleColors.green}1. Ajouter
+${ConsoleColors.cyan}2. Modifier
+${ConsoleColors.yellow}3. Enlever
+${ConsoleColors.blue}4. Lister les mots
+${ConsoleColors.red}5. Quitter
+${ConsoleColors.magenta}Choisissez une option :${ConsoleColors.reset}
+''');
+    String choice2 = stdin.readLineSync() ?? '';
+    switch (choice2) {
+      case '1':
+        print('Entrez un mot à ajouter :');
+        String wordToAdd = stdin.readLineSync()?.toUpperCase() ?? '';
+        dict.addWord(wordToAdd);
+        print('Mot ajouté.');
+        break;
+      case '2':
+        print('Entrez le mot à modifier :');
+        String oldWord = stdin.readLineSync()?.toUpperCase() ?? '';
+        print('Entrez le nouveau mot :');
+        String newWord = stdin.readLineSync()?.toUpperCase() ?? '';
+        if (dict.modifyWord(oldWord, newWord)) {
+          print('Mot modifié.');
+        } else {
+          print('Le mot n\'a pas été trouvé dans le dictionnaire.');
+        }
+        break;
+      case '3':
+        print('Entrez le mot à enlever :');
+        String wordToRemove = stdin.readLineSync()?.toUpperCase() ?? '';
+        if (dict.removeWord(wordToRemove)) {
+          print('Mot enlevé.');
+        } else {
+          print('Le mot n\'a pas été trouvé dans le dictionnaire.');
+        }
+        break;
+      case '4':
+        dict.listWords();
+        break;
+      case '5':
+        print('Êtes-vous sûr de vouloir quitter ? (o/n)');
+        String confirm = stdin.readLineSync()?.toLowerCase() ?? '';
+        if (confirm == 'o') {
+          manageDict = false;
+        }
+        break;
+      default:
+        break;
+    }
+  }
+}
+
+void main() async {
+  Dictionary dict = Dictionary();
+  bool runApp = true;
+
+  while (runApp) {
+    printMainmenu();
+    String choice = stdin.readLineSync() ?? '';
+
+    switch (choice) {
+      case '1':
+        if (dict.words.isNotEmpty) {
+          playGame(dict);
+        } else {
+          print('Le dictionnaire est vide.');
+          print("Appuyez sur une touche pour continuer...");
+          stdin.readLineSync();
+        }
+        break;
+      case '2':
+        manageDictionary(dict);
+        break;
+      case '3':
+        runApp = false;
+        clearScreen();
+        print('${ConsoleColors.cyan}Au revoir !${ConsoleColors.reset}');
+        break;
+      default:
+        break;
+    }
+  }
 }

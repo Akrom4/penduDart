@@ -1,86 +1,96 @@
-class ConsoleColors {
-  static const String reset = '\x1B[0m';
-  static const String red = '\x1B[31m';
-  static const String green = '\x1B[32m';
-  static const String yellow = '\x1B[33m';
-  static const String blue = '\x1B[34m';
-  static const String magenta = '\x1B[35m';
-  static const String cyan = '\x1B[36m';
-  static const String white = '\x1B[37m';
-}
+import 'package:pendu/console_colors.dart';
 
-class HangmanDraw {
+class PrintHangman {
   static final List<String> hangman = [
     '''
-  +---+
-  |   |
-      |
-      |
-      |
-      |
-=========
+   _________
+    |/        
+    |              
+    |                
+    |                 
+    |               
+    |                   
+    |___
 ''',
     '''
-  +---+
-  |   |
-  O   |
-      |
-      |
-      |
-=========
+   _________
+    |/   |      
+    |              
+    |                
+    |                 
+    |               
+    |                   
+    |___
 ''',
     '''
-  +---+
-  |   |
-  O   |
-  |   |
-      |
-      |
-=========
+   _________       
+    |/   |              
+    |   (_)
+    |                         
+    |                       
+    |                         
+    |                          
+    |___
 ''',
     '''
-  +---+
-  |   |
-  O   |
- /|   |
-      |
-      |
-=========
+   ________               
+    |/   |                   
+    |   (_)                  
+    |    |                     
+    |    |                    
+    |                           
+    |                            
+    |___
 ''',
     '''
-  +---+
-  |   |
-  O   |
- /|\\  |
-      |
-      |
-=========
+   _________             
+    |/   |               
+    |   (_)                   
+    |   /|                     
+    |    |                    
+    |                        
+    |                          
+    |___
 ''',
     '''
-  +---+
-  |   |
-  O   |
- /|\\  |
- /    |
-      |
-=========
+
+   _________              
+    |/   |                     
+    |   (_)                     
+    |   /|\\                    
+    |    |                       
+    |                             
+    |                            
+    |___
 ''',
     '''
-  +---+
-  |   |
-  O   |
- /|\\  |
- / \\  |
-      |
-=========
-'''
+   ________                   
+    |/   |                         
+    |   (_)                      
+    |   /|\\                             
+    |    |                          
+    |   /                            
+    |                                  
+    |___
+''',
+    '''
+   ________
+    |/   |     
+    |   (_)    
+    |   /|\\           
+    |    |        
+    |   / \\        
+    |               
+    |___           
+  '''
   ];
 
   static void drawLevel(int level, String color) {
     if (level < 0 || level >= hangman.length) {
       print('Level out of range!');
     } else {
-      String coloredOutput = "${ConsoleColors.reset}${_getColor(color)}${hangman[level]}${ConsoleColors.reset}";
+      String coloredOutput =
+          "${ConsoleColors.reset}${_getColor(color)}${hangman[level]}${ConsoleColors.reset}";
       print(coloredOutput);
     }
   }
